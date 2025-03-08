@@ -1,5 +1,6 @@
 package dott.subscription.member.controller;
 
+import dott.subscription.member.dto.MemberDeleteDto;
 import dott.subscription.member.dto.MemberPatchDto;
 import dott.subscription.member.dto.MemberPostDto;
 import dott.subscription.member.dto.MemberResponseDto;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 @Log4j2
 @RestController
 @RequiredArgsConstructor
@@ -21,29 +23,58 @@ public class MemberController {
     private final MemberService memberService;
     private final MemberMapper memberMapper;
 
+    /**
+     * 회원 가입 기능
+     */
     @PostMapping("/create")
     public ResponseEntity<MemberResponseDto> createMember(@RequestBody @Validated MemberPostDto memberPostDto) {
-        Member member = new Member();
-        member = memberMapper.memberPostDtoToMember(memberPostDto);
-        log.debug("[MEMBER ENTITY] : {}", member);
+        log.info("CREATE MEMBER START");
 
-        MemberResponseDto memberResponseDto = new MemberResponseDto();
-        memberResponseDto = memberMapper.memberToMemberResponseDto(memberService.createMember(member));
+        // Dto to Entity 세팅
+        Member member = memberMapper.memberPostDtoToMember(memberPostDto);
+        log.debug("[MEMBER ENTITY - createMember] : {}", member);
 
-        return new ResponseEntity(new SingleResponseDto<>(memberResponseDto),HttpStatus.CREATED);
+        // 회원 생성
+        MemberResponseDto memberResponseDto = memberMapper.memberToMemberResponseDto(memberService.createMember(member));
+        log.debug("[MemberResponseDto - createMember] : {}", memberResponseDto.toString());
+
+        log.info("CREATE MEMBER END");
+        return new ResponseEntity(new SingleResponseDto<>(memberResponseDto), HttpStatus.CREATED);
     }
 
+    /**
+     * 회원 전화번호를 변경하는 기능
+     */
     @PatchMapping("/patch")
     public ResponseEntity<MemberResponseDto> updateMemberPhoneNumber(@RequestBody @Validated MemberPatchDto memberPatchDto) {
-        MemberResponseDto memberResponseDto = new MemberResponseDto();
+        log.info("UPDATE MEMBER's PHONE NUMBER START");
 
-        return new ResponseEntity(new SingleResponseDto<>(memberResponseDto),HttpStatus.OK);
+        // Dto to Entity 세팅
+        Member member = memberMapper.memberPatchDtoToMember(memberPatchDto);
+        log.debug("[MEMBER ENTITY - updateMemberPhoneNumber] : {}", member);
+
+        // 전화번호 변경
+        MemberResponseDto memberResponseDto = memberMapper.memberToMemberResponseDto(memberService.updatePhoneNumber(member));
+        log.debug("[MemberResponseDto - updateMemberPhoneNumber] : {}", memberResponseDto.toString());
+
+        log.info("UPDATE MEMBER's PHONE NUMBER END");
+        return new ResponseEntity(new SingleResponseDto<>(memberResponseDto), HttpStatus.OK);
     }
 
+    /**
+     * 회원 삭제 기능
+     */
     @PatchMapping("/delete")
-    public ResponseEntity<MemberResponseDto> deleteMember(@RequestBody @Validated MemberPatchDto memberPatchDto) {
-        MemberResponseDto memberResponseDto = new MemberResponseDto();
+    public ResponseEntity<MemberResponseDto> deleteMember(@RequestBody @Validated MemberDeleteDto memberDeleteDto) {
+        log.info("DELETE MEMBER START");
 
-        return new ResponseEntity(new SingleResponseDto<>(memberResponseDto),HttpStatus.CREATED);
+        // Dto to Entity 세팅
+        Member member = memberMapper.memberDeleteDtoToMember(memberDeleteDto);
+
+        // 회원 삭제
+        memberService.deleteMember(member);
+
+        log.info("DELETE MEMBER END");
+        return new ResponseEntity(new SingleResponseDto<>(member), HttpStatus.CREATED);
     }
 }

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @ToString
 public class MemberResponseDto {
     private long id;
-    private String phone;
+    private String phoneNumber;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 }

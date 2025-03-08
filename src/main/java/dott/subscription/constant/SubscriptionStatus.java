@@ -1,5 +1,5 @@
 package dott.subscription.constant;
 
 public enum SubscriptionStatus {
-    NONE, BASIC, PREMIER
+    NONE, BASIC, PREMIUM
 }

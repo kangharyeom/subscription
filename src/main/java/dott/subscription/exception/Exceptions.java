@@ -19,7 +19,15 @@ public enum Exceptions {
     // Channel 도메인 발생 예외
     CHANNEL_EXIST(400, "Channel is already exist"),
     CHANNEL_NOT_FOUND(404, "Channel is not found"),
-    SUBSCRIPTION_API_CONNECTION_ERROR(400, "Subscription Api Connection Error");
+
+    // Subscription 도메인 발생 예외
+    SUBSCRIPTION_API_CONNECTION_ERROR(400, "Subscription Api Connection Error : Transaction rollback"),
+    SUBSCRIPTION_EXIST(400, "Member is Already Subscribe"),
+    SUBSCRIPTION_NOT_FOUND(404, "Unsubscribe Member"),
+    SUBSCRIPTION_HISTORY_NOT_FOUND(404, "Subscription History Not Found");
+
+
+
     @Getter
     private int status;
     @Getter

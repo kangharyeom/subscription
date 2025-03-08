@@ -1,6 +1,7 @@
-package dott.subscription.member.entity;
+package dott.subscription.channel.entity;
 
 import dott.subscription.audit.Auditable;
+import dott.subscription.constant.ChannelType;
 import dott.subscription.subscription.entity.Subscription;
 import dott.subscription.subscriptionHistory.entity.SubscriptionHistory;
 import jakarta.persistence.*;
@@ -12,22 +13,27 @@ import lombok.Setter;
 import java.util.List;
 
 @Entity
-@Table(name = "members")
+@Table(name = "channels")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Member extends Auditable {
+public class Channel extends Auditable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    @Setter
-    private String phoneNumber;
+    @Column(nullable = false)
+    private String name;
 
-    @OneToMany(mappedBy = "member")
+    @Column(nullable = false)
+    private ChannelType channelType;
+
+    @OneToMany(mappedBy = "channel")
     private List<Subscription> subscriptions;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "channel")
     private List<SubscriptionHistory> subscriptionHistories;
+
 }

@@ -23,6 +23,9 @@ import java.util.List;
 public class SubscriptionHistoryController {
     private final SubscriptionHistoryService subscriptionHistoryService;
 
+    /**
+     * 구독 & 구독 해지 이력 조회
+     */
     @GetMapping("/search")
     public ResponseEntity getSubscriptionHistories(@RequestBody @Validated SubscriptionHistoryDto subscriptionHistoryDto){
         log.info("UPDATE MEMBER's PHONE NUMBER START");

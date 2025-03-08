@@ -19,6 +19,7 @@ public class SubscriptionController {
      */
     @PostMapping("/subscribe")
     public Subscription subscribe(@RequestBody SubscribeDto subscribeDto) {
+        log.info("SUBSCRIBE START");
         return subscriptionService.subscribe(subscribeDto);
     }
 
@@ -27,6 +28,7 @@ public class SubscriptionController {
      */
     @PostMapping("/unsubscribe/{subscriptionId}")
     public Subscription unsubscribe(@RequestBody SubscribeDto subscribeDto) {
+        log.info("UNSUBSCRIBE START");
         return subscriptionService.unsubscribe(subscribeDto);
     }
 }

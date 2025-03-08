@@ -3,6 +3,7 @@ package dott.subscription.subscription.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import dott.subscription.channel.entity.Channel;
 import dott.subscription.channel.service.ChannelService;
+import dott.subscription.constant.ChannelType;
 import dott.subscription.constant.SubscriptionStatus;
 import dott.subscription.exception.BusinessLogicException;
 import dott.subscription.exception.Exceptions;
@@ -51,7 +52,7 @@ public class SubscriptionService {
         SubscriptionStatus newSubscriptionStatus = subscribeDto.getSubscriptionStatus();
 
         // 구독 가능 여부 확인
-        validateSubscriptionTransition(previousSubscriptionStatus, newSubscriptionStatus);
+        validateSubscriptionTransition(previousSubscriptionStatus, newSubscriptionStatus, channel.getChannelType());
 
         // 외부 API 통신
         if (!callExternalApi()) {
@@ -83,8 +84,8 @@ public class SubscriptionService {
         SubscriptionStatus previousSubscriptionStatus = subscription.getSubscriptionStatus();
         SubscriptionStatus newSubscriptionStatus = subscribeDto.getSubscriptionStatus();
 
-        // 구독 해지 가능 여부 확인 //
-        validateUnSubscriptionTransition(previousSubscriptionStatus, newSubscriptionStatus);
+        // 구독 해지 가능 여부 확인
+        validateUnSubscriptionTransition(previousSubscriptionStatus, newSubscriptionStatus, channel.getChannelType());
 
         // 외부 API 통신
         if (!callExternalApi()) {
@@ -109,20 +110,20 @@ public class SubscriptionService {
     }
 
     // 구독 가능 여부 검증
-    private void validateSubscriptionTransition(SubscriptionStatus current, SubscriptionStatus next) {
+    private void validateSubscriptionTransition(SubscriptionStatus current, SubscriptionStatus next, ChannelType channelType) {
         if (current == SubscriptionStatus.NONE && next == SubscriptionStatus.BASIC ||
                 current == SubscriptionStatus.NONE && next == SubscriptionStatus.PREMIUM ||
-                current == SubscriptionStatus.BASIC && next == SubscriptionStatus.PREMIUM) {
-            return;
+                current == SubscriptionStatus.BASIC && next == SubscriptionStatus.PREMIUM && ( channelType.equals(ChannelType.BOTH) || channelType.equals(ChannelType.SUBSCRIBE_ONLY))) {
+                return;
         }
         throw new IllegalStateException("잘못된 구독 전환 요청");
     }
 
     // 구독 해지 가능 여부 검증
-    private void validateUnSubscriptionTransition(SubscriptionStatus current, SubscriptionStatus next) {
+    private void validateUnSubscriptionTransition(SubscriptionStatus current, SubscriptionStatus next, ChannelType channelType) {
         if (current == SubscriptionStatus.PREMIUM && next == SubscriptionStatus.BASIC ||
                 current == SubscriptionStatus.PREMIUM && next == SubscriptionStatus.NONE ||
-                current == SubscriptionStatus.BASIC && next == SubscriptionStatus.NONE) {
+                current == SubscriptionStatus.BASIC && next == SubscriptionStatus.NONE && ( channelType.equals(ChannelType.BOTH) || channelType.equals(ChannelType.UNSUBSCRIBE_ONLY))) {
             return;
         }
         throw new IllegalStateException("잘못된 구독 전환 요청");

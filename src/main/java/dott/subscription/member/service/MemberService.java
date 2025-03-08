@@ -19,7 +19,7 @@ public class MemberService {
     // 회원가입
     public Member createMember(Member member) {
         // 중복된 전화번호인지 확인
-        isPhoneNumberDuplicated(member.getPhone());
+        isPhoneNumberDuplicated(member.getPhoneNumber());
 
         log.info("MEMBER CREATE SUCCESS : {}", member);
         return memberRepository.save(member);
@@ -31,10 +31,10 @@ public class MemberService {
         isMemberExistByMemberId(member.getId());
 
         // 중복된 전화번호인지 확인
-        isPhoneNumberDuplicated(member.getPhone());
+        isPhoneNumberDuplicated(member.getPhoneNumber());
 
-        Optional.ofNullable(member.getPhone())
-                .ifPresent(member::setPhone);
+        Optional.ofNullable(member.getPhoneNumber())
+                .ifPresent(member::setPhoneNumber);
 
         log.info("PHONE NUMBER UPDATE SUCCESS : {}", member);
         return memberRepository.save(member);
@@ -51,17 +51,35 @@ public class MemberService {
 
     // 전화번호 중복 확인 메서드
     private void isPhoneNumberDuplicated(String phoneNumber) {
-        Optional<Member> phone = memberRepository.findByPhone(phoneNumber);
+        Optional<Member> phone = memberRepository.findByPhoneNumber(phoneNumber);
         if(phone.isPresent()) {
             throw new BusinessLogicException(Exceptions.PHONE_NUMBER_EXIST);
         }
     }
 
     // 회원 Id로 회원 조회
-    private void isMemberExistByMemberId(long memberId) {
+    private Member isMemberExistByMemberId(long memberId) {
         Optional<Member> optionalMember = memberRepository.findById(memberId);
 
-        optionalMember.orElseThrow(() ->
-                new BusinessLogicException(Exceptions.MEMBER_NOT_FOUND));
+        if (optionalMember.isPresent()) {
+            // 회원이 존재할 경우
+            return optionalMember.get();
+        } else {
+            // 회원이 존재하지 않을 경우
+            throw new BusinessLogicException(Exceptions.MEMBER_NOT_FOUND);
+        }
+    }
+
+    // 전화번호로 회원 조회
+    public Member isMemberExistByPhoneNumber(String phoneNumber) {
+        Optional<Member> optionalMember = memberRepository.findByPhoneNumber(phoneNumber);
+
+        if (optionalMember.isPresent()) {
+            // 회원이 존재할 경우
+            return optionalMember.get();
+        } else {
+            // 회원이 존재하지 않을 경우
+            throw new BusinessLogicException(Exceptions.MEMBER_NOT_FOUND);
+        }
     }
 }

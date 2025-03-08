@@ -41,12 +41,13 @@ public class MemberService {
     }
 
     // 회원 삭제
-    public void deleteMember(Member member) {
+    public Member deleteMember(Member member) {
         // 가입된 회원인지 확인
         isMemberExistByMemberId(member.getId());
 
         memberRepository.delete(member);
         log.info("MEMBER DELETE SUCCESS : {}", member);
+        return member;
     }
 
     // 전화번호 중복 확인 메서드

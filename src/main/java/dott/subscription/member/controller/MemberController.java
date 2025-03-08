@@ -29,10 +29,11 @@ public class MemberController {
     @PostMapping("/create")
     public ResponseEntity<MemberResponseDto> createMember(@RequestBody @Validated MemberPostDto memberPostDto) {
         log.info("CREATE MEMBER START");
+        log.debug("[MemberPostDto - createMember] : {}", memberPostDto.toString());
 
         // Dto to Entity 세팅
         Member member = memberMapper.memberPostDtoToMember(memberPostDto);
-        log.debug("[MEMBER ENTITY - createMember] : {}", member);
+        log.debug("[MEMBER ENTITY - createMember] : {}", member.toString());
 
         // 회원 생성
         MemberResponseDto memberResponseDto = memberMapper.memberToMemberResponseDto(memberService.createMember(member));
@@ -45,13 +46,13 @@ public class MemberController {
     /**
      * 회원 전화번호를 변경하는 기능
      */
-    @PatchMapping("/patch")
+    @PatchMapping("/update")
     public ResponseEntity<MemberResponseDto> updateMemberPhoneNumber(@RequestBody @Validated MemberPatchDto memberPatchDto) {
         log.info("UPDATE MEMBER's PHONE NUMBER START");
 
         // Dto to Entity 세팅
         Member member = memberMapper.memberPatchDtoToMember(memberPatchDto);
-        log.debug("[MEMBER ENTITY - updateMemberPhoneNumber] : {}", member);
+        log.debug("[MEMBER ENTITY - updateMemberPhoneNumber] : {}", member.toString());
 
         // 전화번호 변경
         MemberResponseDto memberResponseDto = memberMapper.memberToMemberResponseDto(memberService.updatePhoneNumber(member));
@@ -72,9 +73,9 @@ public class MemberController {
         Member member = memberMapper.memberDeleteDtoToMember(memberDeleteDto);
 
         // 회원 삭제
-        memberService.deleteMember(member);
+        MemberResponseDto memberResponseDto = memberMapper.memberToMemberResponseDto(memberService.deleteMember(member));
 
         log.info("DELETE MEMBER END");
-        return new ResponseEntity(new SingleResponseDto<>(member), HttpStatus.CREATED);
+        return new ResponseEntity(new SingleResponseDto<>(memberResponseDto), HttpStatus.CREATED);
     }
 }

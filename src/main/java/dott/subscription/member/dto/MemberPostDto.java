@@ -3,10 +3,14 @@ package dott.subscription.member.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 
 @Getter
+@AllArgsConstructor
+@ToString
 public class MemberPostDto {
     @NotBlank(message = "전화번호는 공백이 아니어야 합니다.")
     @Length(min = 11, max = 11, message = "전화번호는 11자리 입니다.")

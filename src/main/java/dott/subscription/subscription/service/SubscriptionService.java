@@ -44,15 +44,18 @@ public class SubscriptionService {
         // 채널 유무 확인
         Channel channel = channelService.isChannelExistByChannelId(subscribeDto.getChannelId());
 
-        // 구독 여부 확인
+        // 구독 여부 확인 (구독중인 회원인지 확인)
         Subscription subscription = subscriptionRepository.findByMember(member)
                 .orElse(new Subscription(member, SubscriptionStatus.NONE));
 
         SubscriptionStatus previousSubscriptionStatus = subscription.getSubscriptionStatus();
         SubscriptionStatus newSubscriptionStatus = subscribeDto.getSubscriptionStatus();
 
-        // 구독 가능 여부 확인
-        validateSubscriptionTransition(previousSubscriptionStatus, newSubscriptionStatus, channel.getChannelType());
+        // 구독 상태 변경 가능한지 확인
+        checkSubscriptionChangeRule(previousSubscriptionStatus, newSubscriptionStatus);
+
+        // 구독 가능한 채널인지 확인
+        checkSubscriptionPossibleChannel(channel.getChannelType());
 
         // 외부 API 통신
         if (!callExternalApi()) {
@@ -66,7 +69,7 @@ public class SubscriptionService {
         // 구독 이력 생성
         subscriptionHistoryRepository.save(new SubscriptionHistory(null, member.getPhoneNumber(), channel.getName(), member, channel, previousSubscriptionStatus, subscribeDto.getSubscriptionStatus()));
 
-        log.info("SUBSCRIBE SUCCESS : {}", subscription);
+        log.info("SUBSCRIBE SUCCESS : {}", subscription.toString());
         return subscription;
     }
 
@@ -78,14 +81,17 @@ public class SubscriptionService {
         // 채널 유무 확인
         Channel channel = channelService.isChannelExistByChannelId(subscribeDto.getChannelId());
 
-        // 구독 해지 여부 확인
+        // 구독 여부 확인 (구독중인 회원인지 확인)
         Subscription subscription = isSubscribingMember(member);
 
         SubscriptionStatus previousSubscriptionStatus = subscription.getSubscriptionStatus();
         SubscriptionStatus newSubscriptionStatus = subscribeDto.getSubscriptionStatus();
 
-        // 구독 해지 가능 여부 확인
-        validateUnSubscriptionTransition(previousSubscriptionStatus, newSubscriptionStatus, channel.getChannelType());
+        // 구독 해지 상태 변경 가능한지 확인
+        checkUnSubscriptionChangeRule(previousSubscriptionStatus, newSubscriptionStatus);
+
+        // 구독 해지 가능한 채널인지 확인
+        checkUnSubscriptionPossibleChannel(channel.getChannelType());
 
         // 외부 API 통신
         if (!callExternalApi()) {
@@ -96,10 +102,16 @@ public class SubscriptionService {
         subscriptionRepository.save(subscription);
 
         // 구독 해지 이력 생성
-        LocalDateTime unsubscribeTime = LocalDateTime.now();
-        subscriptionHistoryRepository.save(new SubscriptionHistory(null, member.getPhoneNumber(), channel.getName(), member, channel, previousSubscriptionStatus, subscribeDto.getSubscriptionStatus(), unsubscribeTime));
+        if (newSubscriptionStatus.equals(SubscriptionStatus.NONE)) {
+            // 일반구독 || 프리미엄 구독 -> 구독해지
+            LocalDateTime unsubscribeTime = LocalDateTime.now();
+            subscriptionHistoryRepository.save(new SubscriptionHistory(null, member.getPhoneNumber(), channel.getName(), member, channel, previousSubscriptionStatus, subscribeDto.getSubscriptionStatus(), unsubscribeTime));
+        } else {
+            // 프리미엄 구독 -> 일반구독
+            subscriptionHistoryRepository.save(new SubscriptionHistory(null, member.getPhoneNumber(), channel.getName(), member, channel, previousSubscriptionStatus, subscribeDto.getSubscriptionStatus()));
+        }
 
-        log.info("UNSUBSCRIBE SUCCESS : {}", subscription);
+        log.info("UNSUBSCRIBE SUCCESS : {}", subscription.toString());
         return subscription;
     }
 
@@ -109,24 +121,40 @@ public class SubscriptionService {
         return response.getBody().get(0).get("random").asInt() == 1;
     }
 
-    // 구독 가능 여부 검증
-    private void validateSubscriptionTransition(SubscriptionStatus current, SubscriptionStatus next, ChannelType channelType) {
+    // 구독 상태 변경 가능 규칙
+    private void checkSubscriptionChangeRule(SubscriptionStatus current, SubscriptionStatus next) {
         if (current == SubscriptionStatus.NONE && next == SubscriptionStatus.BASIC ||
                 current == SubscriptionStatus.NONE && next == SubscriptionStatus.PREMIUM ||
-                current == SubscriptionStatus.BASIC && next == SubscriptionStatus.PREMIUM && ( channelType.equals(ChannelType.BOTH) || channelType.equals(ChannelType.SUBSCRIBE_ONLY))) {
-                return;
-        }
-        throw new IllegalStateException("잘못된 구독 전환 요청");
-    }
-
-    // 구독 해지 가능 여부 검증
-    private void validateUnSubscriptionTransition(SubscriptionStatus current, SubscriptionStatus next, ChannelType channelType) {
-        if (current == SubscriptionStatus.PREMIUM && next == SubscriptionStatus.BASIC ||
-                current == SubscriptionStatus.PREMIUM && next == SubscriptionStatus.NONE ||
-                current == SubscriptionStatus.BASIC && next == SubscriptionStatus.NONE && ( channelType.equals(ChannelType.BOTH) || channelType.equals(ChannelType.UNSUBSCRIBE_ONLY))) {
+                current == SubscriptionStatus.BASIC && next == SubscriptionStatus.PREMIUM) {
             return;
         }
-        throw new IllegalStateException("잘못된 구독 전환 요청");
+        throw new IllegalStateException("구독 상태 변경 불가능한 요청");
+    }
+
+    // 구독 해지 상태 변경 가능 규칙
+    private void checkUnSubscriptionChangeRule(SubscriptionStatus current, SubscriptionStatus next) {
+        if (current == SubscriptionStatus.PREMIUM && next == SubscriptionStatus.BASIC ||
+                current == SubscriptionStatus.PREMIUM && next == SubscriptionStatus.NONE ||
+                current == SubscriptionStatus.BASIC && next == SubscriptionStatus.NONE) {
+            return;
+        }
+        throw new IllegalStateException("구독 해지 상태 변경 불가능한 요청");
+    }
+
+    // 구독 가능 채널 확인
+    private void checkSubscriptionPossibleChannel(ChannelType channelType) {
+        if (channelType.equals(ChannelType.BOTH) || channelType.equals(ChannelType.SUBSCRIBE_ONLY)) {
+            return;
+        }
+        throw new IllegalStateException("구독 불가능한 채널");
+    }
+
+    // 구독 해지 가능 채널 확인
+    private void checkUnSubscriptionPossibleChannel(ChannelType channelType) {
+        if (channelType.equals(ChannelType.BOTH) || channelType.equals(ChannelType.SUBSCRIBE_ONLY)) {
+            return;
+        }
+        throw new IllegalStateException("구독 해지 불가능한 채널");
     }
 
     // 구독중인 회원 확인 메서드

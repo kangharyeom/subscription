@@ -5,10 +5,7 @@ import dott.subscription.channel.entity.Channel;
 import dott.subscription.constant.SubscriptionStatus;
 import dott.subscription.member.entity.Member;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "subscriptions")
@@ -16,6 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Subscription extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,9 +1,6 @@
 package dott.subscription.member.controller;
 
-import dott.subscription.member.dto.MemberDeleteDto;
-import dott.subscription.member.dto.MemberPatchDto;
-import dott.subscription.member.dto.MemberPostDto;
-import dott.subscription.member.dto.MemberResponseDto;
+import dott.subscription.member.dto.*;
 import dott.subscription.member.entity.Member;
 import dott.subscription.member.mapper.MemberMapper;
 import dott.subscription.member.service.MemberService;
@@ -24,7 +21,7 @@ public class MemberController {
     private final MemberMapper memberMapper;
 
     /**
-     * 회원 가입 기능
+     * 회원 가입
      */
     @PostMapping("/create")
     public ResponseEntity<MemberResponseDto> createMember(@RequestBody @Validated MemberPostDto memberPostDto) {
@@ -44,7 +41,7 @@ public class MemberController {
     }
 
     /**
-     * 회원 전화번호를 변경하는 기능
+     * 회원 전화번호 변경
      */
     @PatchMapping("/update")
     public ResponseEntity<MemberResponseDto> updateMemberPhoneNumber(@RequestBody @Validated MemberPatchDto memberPatchDto) {
@@ -63,7 +60,26 @@ public class MemberController {
     }
 
     /**
-     * 회원 삭제 기능
+     * 회원 상세 조회
+     */
+    @GetMapping("/{memberId}")
+    public ResponseEntity<MemberResponseDto> getMemberDetails(@PathVariable long memberId) {
+        log.info("UPDATE MEMBER's PHONE NUMBER START");
+
+        // Dto to Entity 세팅
+        Member member = memberService.isMemberExistByMemberId(memberId);
+        log.debug("[MEMBER ENTITY - getMemberDetails] : {}", member.toString());
+
+        // 전화번호 변경
+        MemberDetailsResponseDto memberDetailsResponseDto = memberMapper.memberToMemberDetailsResponseDto(member);
+        log.debug("[MemberDetailsResponseDto - getMemberDetails] : {}", memberDetailsResponseDto.toString());
+
+        log.info("UPDATE MEMBER's PHONE NUMBER END");
+        return new ResponseEntity(new SingleResponseDto<>(memberDetailsResponseDto), HttpStatus.OK);
+    }
+
+    /**
+     * 회원 삭제
      */
     @PatchMapping("/delete")
     public ResponseEntity<MemberResponseDto> deleteMember(@RequestBody @Validated MemberDeleteDto memberDeleteDto) {

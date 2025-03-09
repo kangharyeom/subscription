@@ -24,9 +24,9 @@ public class Member extends Auditable {
     @Setter
     private String phoneNumber;
 
-    @OneToMany(mappedBy = "member")
-    private List<Subscription> subscriptions;
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Subscription subscription;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubscriptionHistory> subscriptionHistories;
 }

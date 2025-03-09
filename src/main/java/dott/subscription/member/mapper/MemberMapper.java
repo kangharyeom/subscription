@@ -1,9 +1,6 @@
 package dott.subscription.member.mapper;
 
-import dott.subscription.member.dto.MemberDeleteDto;
-import dott.subscription.member.dto.MemberPatchDto;
-import dott.subscription.member.dto.MemberPostDto;
-import dott.subscription.member.dto.MemberResponseDto;
+import dott.subscription.member.dto.*;
 import dott.subscription.member.entity.Member;
 import org.mapstruct.Mapper;
 
@@ -14,4 +11,16 @@ public interface MemberMapper {
     Member memberDeleteDtoToMember(MemberDeleteDto memberDeleteDto);
 
     MemberResponseDto memberToMemberResponseDto(Member member);
+    default MemberDetailsResponseDto memberToMemberDetailsResponseDto(Member member){
+
+        return MemberDetailsResponseDto.builder()
+                .id(member.getId())
+                .phoneNumber(member.getPhoneNumber())
+                .channelId(member.getSubscription().getChannel().getId())
+                .channelName(member.getSubscription().getChannel().getName())
+                .subscriptionStatus(member.getSubscription().getSubscriptionStatus())
+                .createdAt(member.getCreatedAt())
+                .modifiedAt(member.getModifiedAt())
+                .build();
+    }
 }

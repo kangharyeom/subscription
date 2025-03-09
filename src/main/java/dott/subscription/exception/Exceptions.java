@@ -21,9 +21,13 @@ public enum Exceptions {
     CHANNEL_NOT_FOUND(404, "Channel is not found"),
 
     // Subscription 도메인 발생 예외
-    SUBSCRIPTION_API_CONNECTION_ERROR(400, "Subscription Api Connection Error : Transaction rollback"),
+    SUBSCRIPTION_API_CONNECTION_ERROR(500, "Subscription Api Connection Error : Transaction rollback"),
     SUBSCRIPTION_EXIST(400, "Member is Already Subscribe"),
-    SUBSCRIPTION_NOT_FOUND(404, "Unsubscribe Member"),
+    SUBSCRIPTION_NOT_FOUND(404, "Unsubscribed Member"),
+    CAN_NOT_SUBSCRIBE(400, "CAN_NOT_SUBSCRIBE: Invalid subscription change request"),
+    CAN_NOT_UNSUBSCRIBE(400, "CAN_NOT_UNSUBSCRIBE: Invalid subscription change request"),
+    CAN_NOT_SUBSCRIBE_CHANNEL(400, "This channel is UNSUBSCRIBE_ONLY Channel"),
+    CAN_NOT_UNSUBSCRIBE_CHANNEL(400, "This channel is SUBSCRIBE_ONLY Channel"),
     SUBSCRIPTION_HISTORY_NOT_FOUND(404, "Subscription History Not Found");
 
 

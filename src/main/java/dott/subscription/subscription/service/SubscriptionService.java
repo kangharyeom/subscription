@@ -131,7 +131,7 @@ public class SubscriptionService {
                 current == SubscriptionStatus.BASIC && next == SubscriptionStatus.PREMIUM) {
             return;
         }
-        throw new IllegalStateException("구독 상태 변경 불가능한 요청");
+        throw new BusinessLogicException(Exceptions.CAN_NOT_SUBSCRIBE);
     }
 
     // 구독 해지 상태 변경 가능 규칙
@@ -141,7 +141,7 @@ public class SubscriptionService {
                 current == SubscriptionStatus.BASIC && next == SubscriptionStatus.NONE) {
             return;
         }
-        throw new IllegalStateException("구독 해지 상태 변경 불가능한 요청");
+        throw new BusinessLogicException(Exceptions.CAN_NOT_UNSUBSCRIBE);
     }
 
     // 구독 가능 채널 확인
@@ -149,7 +149,7 @@ public class SubscriptionService {
         if (channelType.equals(ChannelType.BOTH) || channelType.equals(ChannelType.SUBSCRIBE_ONLY)) {
             return;
         }
-        throw new IllegalStateException("구독 불가능한 채널");
+        throw new BusinessLogicException(Exceptions.CAN_NOT_SUBSCRIBE_CHANNEL);
     }
 
     // 구독 해지 가능 채널 확인
@@ -157,7 +157,7 @@ public class SubscriptionService {
         if (channelType.equals(ChannelType.BOTH) || channelType.equals(ChannelType.SUBSCRIBE_ONLY)) {
             return;
         }
-        throw new IllegalStateException("구독 해지 불가능한 채널");
+        throw new BusinessLogicException(Exceptions.CAN_NOT_UNSUBSCRIBE_CHANNEL);
     }
 
     // 구독중인 회원 확인 메서드

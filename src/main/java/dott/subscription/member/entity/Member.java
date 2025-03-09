@@ -24,6 +24,7 @@ public class Member extends Auditable {
     @Setter
     private String phoneNumber;
 
+    @ToString.Exclude
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Subscription subscription;
 

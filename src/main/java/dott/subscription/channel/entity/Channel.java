@@ -29,9 +29,11 @@ public class Channel extends Auditable {
     private ChannelType channelType;
 
     @OneToMany(mappedBy = "channel")
+    @ToString.Exclude
     private List<Subscription> subscriptions;
 
     @OneToMany(mappedBy = "channel")
+    @ToString.Exclude
     private List<SubscriptionHistory> subscriptionHistories;
 
 }

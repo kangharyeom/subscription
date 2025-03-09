@@ -1,5 +1,6 @@
 package dott.subscription.subscriptionHistory.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dott.subscription.audit.Auditable;
 import dott.subscription.channel.entity.Channel;
 import dott.subscription.constant.SubscriptionStatus;
@@ -28,10 +29,12 @@ public class SubscriptionHistory extends Auditable {
     @Column(nullable = false)
     private String channelName;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "channel_id", nullable = false)
     private Channel channel;

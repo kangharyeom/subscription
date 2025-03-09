@@ -63,14 +63,12 @@ public class ChannelService {
     }
 
     // 채널 이름으로 채널 조회
-    public Channel isChannelNameDuplicated(String name) {
+    public void isChannelNameDuplicated(String name) {
         Optional<Channel> optionalChannel = channelRepository.findByName(name);
 
         if (optionalChannel.isPresent()) {
             // 채널이 존재할 경우
             throw new BusinessLogicException(Exceptions.CHANNEL_EXIST);
-        } else {
-            return optionalChannel.get();
         }
     }
 }

@@ -5,10 +5,7 @@ import dott.subscription.constant.ChannelType;
 import dott.subscription.subscription.entity.Subscription;
 import dott.subscription.subscriptionHistory.entity.SubscriptionHistory;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -18,6 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Channel extends Auditable {
 
     @Id

@@ -20,7 +20,7 @@ public class ChannelService {
         // 채널 이름 중복 확인
         isChannelNameDuplicated(channel.getName());
 
-        log.info("CHANNEL CREATE SUCCESS : {}", channel);
+        log.info("CHANNEL CREATE SUCCESS : {}", channel.toString());
         return channelRepository.save(channel);
     }
 
@@ -36,7 +36,7 @@ public class ChannelService {
         Optional.ofNullable(channel.getName())
                 .ifPresent(channel::setName);
 
-        log.info("CHANNEL UPDATE SUCCESS : {}", channel);
+        log.info("CHANNEL UPDATE SUCCESS : {}", channel.toString());
         return channelRepository.save(channel);
     }
 
@@ -44,7 +44,7 @@ public class ChannelService {
         // 등록된 채널인지 확인
         Channel channel = isChannelExistByChannelId(channelId);
 
-        log.info("CHANNEL DELETE SUCCESS : {}", channel);
+        log.info("CHANNEL DELETE SUCCESS : {}", channel.toString());
         channelRepository.delete(channel);
         return channel;
     }

@@ -21,7 +21,7 @@ public class MemberService {
         // 중복된 전화번호인지 확인
         isPhoneNumberDuplicated(member.getPhoneNumber());
 
-        log.info("MEMBER CREATE SUCCESS : {}", member);
+        log.info("MEMBER CREATE SUCCESS : {}", member.toString());
         return memberRepository.save(member);
     }
 
@@ -36,7 +36,7 @@ public class MemberService {
         Optional.ofNullable(member.getPhoneNumber())
                 .ifPresent(member::setPhoneNumber);
 
-        log.info("PHONE NUMBER UPDATE SUCCESS : {}", member);
+        log.info("PHONE NUMBER UPDATE SUCCESS : {}", member.toString());
         return memberRepository.save(member);
     }
 
@@ -46,7 +46,7 @@ public class MemberService {
         isMemberExistByMemberId(member.getId());
 
         memberRepository.delete(member);
-        log.info("MEMBER DELETE SUCCESS : {}", member);
+        log.info("MEMBER DELETE SUCCESS : {}", member.toString());
         return member;
     }
 
@@ -59,7 +59,7 @@ public class MemberService {
     }
 
     // 회원 Id로 회원 조회
-    private Member isMemberExistByMemberId(long memberId) {
+    public Member isMemberExistByMemberId(long memberId) {
         Optional<Member> optionalMember = memberRepository.findById(memberId);
 
         if (optionalMember.isPresent()) {

@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 public class MemberDetailsResponseDto {
     private long id;
     private String phoneNumber;
-    private Long channelId;
-    private String channelName;
     private SubscriptionStatus subscriptionStatus;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;

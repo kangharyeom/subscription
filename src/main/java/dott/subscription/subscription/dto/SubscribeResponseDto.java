@@ -10,10 +10,6 @@ import java.time.LocalDateTime;
 @Builder
 @ToString
 public class SubscribeResponseDto {
-    private String phoneNumber;
-    private long channelId;
-    private String channelName;
-    private SubscriptionStatus subscriptionStatus;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 }

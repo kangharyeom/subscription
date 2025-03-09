@@ -64,6 +64,8 @@ public class SubscriptionService {
 
         // 구독 정보 최신화
         subscription.setSubscriptionStatus(subscribeDto.getSubscriptionStatus());
+        subscription.setMember(member);
+        subscription.setChannel(channel);
         subscriptionRepository.save(subscription);
 
         // 구독 이력 생성
@@ -118,6 +120,7 @@ public class SubscriptionService {
     // 외부 API 호출
     private boolean callExternalApi() {
         ResponseEntity<JsonNode> response = restTemplate.exchange(RANDOM_API_URL, HttpMethod.GET, null, JsonNode.class);
+        log.debug("EXTERNAL API RESPONSE : {}", response.toString());
         return response.getBody().get(0).get("random").asInt() == 1;
     }
 

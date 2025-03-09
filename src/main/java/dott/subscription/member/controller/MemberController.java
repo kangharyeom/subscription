@@ -81,7 +81,7 @@ public class MemberController {
     /**
      * 회원 삭제
      */
-    @PatchMapping("/delete")
+    @DeleteMapping("/delete")
     public ResponseEntity<MemberResponseDto> deleteMember(@RequestBody @Validated MemberDeleteDto memberDeleteDto) {
         log.info("DELETE MEMBER START");
 
@@ -92,6 +92,6 @@ public class MemberController {
         MemberResponseDto memberResponseDto = memberMapper.memberToMemberResponseDto(memberService.deleteMember(member));
 
         log.info("DELETE MEMBER END");
-        return new ResponseEntity(new SingleResponseDto<>(memberResponseDto), HttpStatus.CREATED);
+        return new ResponseEntity(new SingleResponseDto<>(memberResponseDto), HttpStatus.NO_CONTENT);
     }
 }

@@ -17,23 +17,13 @@ public interface MemberMapper {
 
     MemberResponseDto memberToMemberResponseDto(Member member);
     default MemberDetailsResponseDto memberToMemberDetailsResponseDto(Member member){
-        Long channelId = Optional.ofNullable(member.getSubscription())
-                .map(Subscription::getChannel)
-                .map(Channel::getId)
-                .orElse(null);
-        String channelName = Optional.ofNullable(member.getSubscription())
-                .map(Subscription::getChannel)
-                .map(Channel::getName)
-                .orElse(null);
         SubscriptionStatus subscriptionStatus = Optional.ofNullable(member.getSubscription())
                 .map(Subscription::getSubscriptionStatus)
-                .orElse(null);
+                .orElse(SubscriptionStatus.NONE);
 
         return MemberDetailsResponseDto.builder()
                 .id(member.getId())
                 .phoneNumber(member.getPhoneNumber())
-                .channelId(channelId)
-                .channelName(channelName)
                 .subscriptionStatus(subscriptionStatus)
                 .createdAt(member.getCreatedAt())
                 .modifiedAt(member.getModifiedAt())

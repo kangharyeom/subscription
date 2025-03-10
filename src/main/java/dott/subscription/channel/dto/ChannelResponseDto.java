@@ -1,15 +1,15 @@
 package dott.subscription.channel.dto;
 
 import dott.subscription.constant.ChannelType;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class ChannelResponseDto {
     private long id;
     private String name;

@@ -42,41 +42,41 @@ public class ChannelController {
     /**
      * 채널 단건 조회
      */
-    @PostMapping("/{channelId}")
+    @GetMapping("/{channelId}")
     public ResponseEntity readChannel(@PathVariable long channelId) {
         log.info("CHANNEL READ START");
         log.debug("[channelId - readChannel] : {}", channelId);
 
         // 채널 단건 조회
-        ChannelResponseDto channelResponseDto = channelMapper.channelToChannelResponseDto(channelService.isChannelExistByChannelId(channelId));
+        ChannelResponseDto channelResponseDto = channelMapper.channelToChannelResponseDto(channelService.findChannelByChannelId(channelId));
         log.debug("[ChannelResponseDto - readChannel] : {}", channelResponseDto.toString());
         log.info("CHANNEL READ END");
-        return new ResponseEntity<>(new SingleResponseDto<>(channelResponseDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(new SingleResponseDto<>(channelResponseDto), HttpStatus.OK);
     }
 
     /**
-     * 채널 정보 변경
+     * 채널 타입 변경
      */
-    @PostMapping("/update")
-    public ResponseEntity updateChannel(@RequestBody ChannelPatchDto channelPatchDto) {
+    @PatchMapping("/update/type")
+    public ResponseEntity updateChannelType(@RequestBody ChannelPatchDto channelPatchDto) {
         log.info("CHANNEL UPDATE START");
 
         // Dto to Entity 세팅
         Channel channel = channelMapper.channelPatchDtoToChannel(channelPatchDto);
         log.debug("[channel - updateChannel] : {}", channel.toString());
 
-        // 채널 정보 변경
-        ChannelResponseDto channelResponseDto = channelMapper.channelToChannelResponseDto(channelService.updateChannel(channel));
+        // 채널 타입 변경
+        ChannelResponseDto channelResponseDto = channelMapper.channelToChannelResponseDto(channelService.updateChannelType(channel));
         log.debug("[ChannelResponseDto - updateChannel] : {}", channelResponseDto.toString());
 
         log.info("CHANNEL UPDATE END");
-        return new ResponseEntity<>(new SingleResponseDto<>(channelResponseDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(new SingleResponseDto<>(channelResponseDto), HttpStatus.OK);
     }
 
     /**
      * 채널 삭제
      */
-    @PostMapping("/delete/{channelId}")
+    @DeleteMapping("/delete/{channelId}")
     public ResponseEntity deleteChannel(@PathVariable long channelId) {
         log.info("CHANNEL UPDATE START");
 
@@ -85,6 +85,6 @@ public class ChannelController {
         ChannelResponseDto channelResponseDto = channelMapper.channelToChannelResponseDto(channelService.deleteChannel(channelId));
         log.debug("[ChannelResponseDto - deleteChannel] : {}", channelResponseDto.toString());
         log.info("CHANNEL UPDATE END");
-        return new ResponseEntity<>(new SingleResponseDto<>(channelResponseDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(new SingleResponseDto<>(channelResponseDto), HttpStatus.NO_CONTENT);
     }
 }

@@ -10,8 +10,6 @@ import lombok.Setter;
 @Setter
 public class ChannelPatchDto {
     private long id;
-    @NotBlank(message = "채널 이름은 공백이 아니어야 합니다.")
-    private String name;
     @NonNull
     private ChannelType channelType;
 }

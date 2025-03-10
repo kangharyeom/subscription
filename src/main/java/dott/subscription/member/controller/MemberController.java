@@ -67,7 +67,7 @@ public class MemberController {
         log.info("UPDATE MEMBER's PHONE NUMBER START");
 
         // Dto to Entity 세팅
-        Member member = memberService.isMemberExistByMemberId(memberId);
+        Member member = memberService.findMemberByMemberId(memberId);
         log.debug("[MEMBER ENTITY - getMemberDetails] : {}", member.toString());
 
         // 전화번호 변경

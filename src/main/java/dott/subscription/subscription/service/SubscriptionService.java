@@ -39,10 +39,10 @@ public class SubscriptionService {
     // 구독 기능
     public Subscription subscribe(SubscribeDto subscribeDto) {
         // 회원 인증
-        Member member = memberService.isMemberExistByPhoneNumber(subscribeDto.getPhoneNumber());
+        Member member = memberService.findMemberByPhoneNumber(subscribeDto.getPhoneNumber());
 
         // 채널 유무 확인
-        Channel channel = channelService.isChannelExistByChannelId(subscribeDto.getChannelId());
+        Channel channel = channelService.findChannelByChannelId(subscribeDto.getChannelId());
 
         // 구독 여부 확인 (구독중인 회원인지 확인)
         Subscription subscription = subscriptionRepository.findByMember(member)
@@ -78,13 +78,13 @@ public class SubscriptionService {
     // 구독해지 기능
     public Subscription unsubscribe(SubscribeDto subscribeDto) {
         // 회원 인증
-        Member member = memberService.isMemberExistByPhoneNumber(subscribeDto.getPhoneNumber());
+        Member member = memberService.findMemberByPhoneNumber(subscribeDto.getPhoneNumber());
 
         // 채널 유무 확인
-        Channel channel = channelService.isChannelExistByChannelId(subscribeDto.getChannelId());
+        Channel channel = channelService.findChannelByChannelId(subscribeDto.getChannelId());
 
         // 구독 여부 확인 (구독중인 회원인지 확인)
-        Subscription subscription = isSubscribingMember(member);
+        Subscription subscription = validateFindSubscriptionByMember(member);
 
         SubscriptionStatus previousSubscriptionStatus = subscription.getSubscriptionStatus();
         SubscriptionStatus newSubscriptionStatus = subscribeDto.getSubscriptionStatus();
@@ -160,8 +160,8 @@ public class SubscriptionService {
         throw new BusinessLogicException(Exceptions.CAN_NOT_UNSUBSCRIBE_CHANNEL);
     }
 
-    // 구독중인 회원 확인 메서드
-    public Subscription isSubscribingMember(Member member) {
+    // 구독중인 회원 검증
+    public Subscription validateFindSubscriptionByMember(Member member) {
         Optional<Subscription> optionalSubscription = subscriptionRepository.findByMember(member);
 
         if (optionalSubscription.isPresent()) {

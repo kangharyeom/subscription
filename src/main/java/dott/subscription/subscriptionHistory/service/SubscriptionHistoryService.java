@@ -21,15 +21,15 @@ public class SubscriptionHistoryService {
     // 구독 & 구독 해지 이력 조회
     public List<SubscriptionHistory> getSubscriptionHistory(String phoneNumber){
         // 회원 인증
-        memberService.isMemberExistByPhoneNumber(phoneNumber);
+        memberService.findMemberByPhoneNumber(phoneNumber);
 
         // 구독 이력 확인 및 전체 조회
-        return isSubscriptionHistoryExist(phoneNumber);
+        return findAllSubscriptionHistoryByPhoneNumber(phoneNumber);
     }
 
 
     // 구독 이력 확인 및 전체 조회
-    public List<SubscriptionHistory> isSubscriptionHistoryExist(String phoneNumber){
+    public List<SubscriptionHistory> findAllSubscriptionHistoryByPhoneNumber(String phoneNumber){
         List<SubscriptionHistory> subscriptionHistory = subscriptionHistoryRepository.findAllByPhoneNumber(phoneNumber);
         if (subscriptionHistory.isEmpty()) {
             // 구독이력 존재하지 않을 경우

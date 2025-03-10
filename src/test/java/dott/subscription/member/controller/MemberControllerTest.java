@@ -1,10 +1,8 @@
 package dott.subscription.member.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dott.subscription.member.dto.MemberDeleteDto;
-import dott.subscription.member.dto.MemberPatchDto;
-import dott.subscription.member.dto.MemberPostDto;
-import dott.subscription.member.dto.MemberResponseDto;
+import dott.subscription.constant.SubscriptionStatus;
+import dott.subscription.member.dto.*;
 import dott.subscription.member.entity.Member;
 import dott.subscription.member.service.MemberService;
 import dott.subscription.member.mapper.MemberMapper;
@@ -34,6 +32,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -145,6 +144,43 @@ class MemberControllerTest {
                         responseFields(
                                 fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원 ID"),
                                 fieldWithPath("data.phoneNumber").type(JsonFieldType.STRING).description("변경된 전화번호"),
+                                fieldWithPath("data.createdAt").type(JsonFieldType.STRING).description("회원 가입 날짜"),
+                                fieldWithPath("data.modifiedAt").type(JsonFieldType.STRING).description("회원 정보 수정 날짜")
+                        )
+                ));
+    }
+
+    /**
+     * 회원 상세 조회 테스트
+     */
+    @Test
+    @DisplayName("회원 상세 조회 테스트")
+    void getMemberDetailsTest() throws Exception {
+        long memberId = 1L;
+        Member member = new Member();
+        member.setId(1L);
+
+        given(memberService.findMemberByMemberId(Mockito.anyLong())).willReturn(member);
+
+        LocalDateTime localDateTime = LocalDateTime.now();
+        MemberDetailsResponseDto memberDetailsResponseDto = new MemberDetailsResponseDto();
+        memberDetailsResponseDto.setId(1L);
+        memberDetailsResponseDto.setPhoneNumber("01056781234");
+        memberDetailsResponseDto.setCreatedAt(localDateTime);
+        memberDetailsResponseDto.setModifiedAt(localDateTime);
+        memberDetailsResponseDto.setSubscriptionStatus(SubscriptionStatus.NONE);
+        given(memberMapper.memberToMemberDetailsResponseDto(Mockito.any(Member.class))).willReturn(memberDetailsResponseDto);
+
+        // When & Then
+        mockMvc.perform(get("/api/members/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(memberId)))
+                .andExpect(status().isOk())
+                .andDo(document("member-details",
+                        responseFields(
+                                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("삭제된 회원 ID"),
+                                fieldWithPath("data.phoneNumber").type(JsonFieldType.STRING).description("변경된 전화번호"),
+                                fieldWithPath("data.subscriptionStatus").type(JsonFieldType.STRING).description("회원 구독 상태"),
                                 fieldWithPath("data.createdAt").type(JsonFieldType.STRING).description("회원 가입 날짜"),
                                 fieldWithPath("data.modifiedAt").type(JsonFieldType.STRING).description("회원 정보 수정 날짜")
                         )

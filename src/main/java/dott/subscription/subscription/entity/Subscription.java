@@ -19,9 +19,8 @@ public class Subscription extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "member_id", nullable = false, unique = true)
-    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @Enumerated(EnumType.STRING)
@@ -30,7 +29,6 @@ public class Subscription extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "channel_id")
-    @ToString.Exclude
     private Channel channel;
 
     public Subscription(Member member, SubscriptionStatus subscriptionStatus) {

@@ -24,25 +24,20 @@ public class ChannelService {
         return channelRepository.save(channel);
     }
 
-    public Channel updateChannel(Channel channel) {
+    public Channel updateChannelType(Channel channel) {
         // 등록된 채널인지 확인
-        isChannelExistByChannelId(channel.getId());
-
-        // 채널 이름 중복 확인
-        isChannelNameDuplicated(channel.getName());
+        Channel findChannel = findChannelByChannelId(channel.getId());
 
         Optional.ofNullable(channel.getChannelType())
                 .ifPresent(channel::setChannelType);
-        Optional.ofNullable(channel.getName())
-                .ifPresent(channel::setName);
 
-        log.info("CHANNEL UPDATE SUCCESS : {}", channel.toString());
+        log.info("CHANNEL TYPE UPDATE SUCCESS : {}", channel.toString());
         return channelRepository.save(channel);
     }
 
     public Channel deleteChannel(long channelId) {
         // 등록된 채널인지 확인
-        Channel channel = isChannelExistByChannelId(channelId);
+        Channel channel = findChannelByChannelId(channelId);
 
         log.info("CHANNEL DELETE SUCCESS : {}", channel.toString());
         channelRepository.delete(channel);
@@ -50,7 +45,7 @@ public class ChannelService {
     }
 
     // 채널 Id로 채널 조회
-    public Channel isChannelExistByChannelId(long channelId) {
+    public Channel findChannelByChannelId(long channelId) {
         Optional<Channel> optionalChannel = channelRepository.findById(channelId);
 
         if (optionalChannel.isPresent()) {
@@ -62,7 +57,7 @@ public class ChannelService {
         }
     }
 
-    // 채널 이름으로 채널 조회
+    // 채널 이름 중복 확인
     public void isChannelNameDuplicated(String name) {
         Optional<Channel> optionalChannel = channelRepository.findByName(name);
 

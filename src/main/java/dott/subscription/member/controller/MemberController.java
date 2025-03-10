@@ -5,6 +5,7 @@ import dott.subscription.member.entity.Member;
 import dott.subscription.member.mapper.MemberMapper;
 import dott.subscription.member.service.MemberService;
 import dott.subscription.response.SingleResponseDto;
+import dott.subscription.subscription.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/members")
 public class MemberController {
     private final MemberService memberService;
+    private final SubscriptionService subscriptionService;
     private final MemberMapper memberMapper;
 
     /**
@@ -67,11 +69,11 @@ public class MemberController {
         log.info("UPDATE MEMBER's PHONE NUMBER START");
 
         // Dto to Entity 세팅
-        Member member = memberService.isMemberExistByMemberId(memberId);
+        Member member = memberService.findMemberByMemberId(memberId);
         log.debug("[MEMBER ENTITY - getMemberDetails] : {}", member.toString());
 
         // 전화번호 변경
-        MemberDetailsResponseDto memberDetailsResponseDto = memberMapper.memberToMemberDetailsResponseDto(member);
+        MemberDetailsResponseDto memberDetailsResponseDto = memberMapper.memberToMemberDetailsResponseDto(member, subscriptionService);
         log.debug("[MemberDetailsResponseDto - getMemberDetails] : {}", memberDetailsResponseDto.toString());
 
         log.info("UPDATE MEMBER's PHONE NUMBER END");

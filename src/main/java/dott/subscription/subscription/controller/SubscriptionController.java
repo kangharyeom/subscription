@@ -49,6 +49,6 @@ public class SubscriptionController {
         log.debug("[SubscribeResponseDto - unsubscribe] : {}", subscribeResponseDto.toString());
 
         log.info("UNSUBSCRIBE END");
-        return new ResponseEntity<>(new SingleResponseDto<>(subscribeResponseDto), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(new SingleResponseDto<>(subscribeResponseDto), HttpStatus.OK);
     }
 }

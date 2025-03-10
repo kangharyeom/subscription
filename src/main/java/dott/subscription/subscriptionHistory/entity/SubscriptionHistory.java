@@ -29,12 +29,10 @@ public class SubscriptionHistory extends Auditable {
     @Column(nullable = false)
     private String channelName;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "channel_id", nullable = false)
     private Channel channel;

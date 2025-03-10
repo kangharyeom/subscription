@@ -28,7 +28,7 @@ public class MemberService {
     // 회원 전화번호 변경
     public Member updatePhoneNumber(Member member) {
         // 가입된 회원인지 확인
-        isMemberExistByMemberId(member.getId());
+        findMemberByMemberId(member.getId());
 
         // 중복된 전화번호인지 확인
         isPhoneNumberDuplicated(member.getPhoneNumber());
@@ -43,7 +43,7 @@ public class MemberService {
     // 회원 삭제
     public Member deleteMember(Member member) {
         // 가입된 회원인지 확인
-        isMemberExistByMemberId(member.getId());
+        findMemberByMemberId(member.getId());
 
         memberRepository.delete(member);
         log.info("MEMBER DELETE SUCCESS : {}", member.toString());
@@ -59,7 +59,7 @@ public class MemberService {
     }
 
     // 회원 Id로 회원 조회
-    public Member isMemberExistByMemberId(long memberId) {
+    public Member findMemberByMemberId(long memberId) {
         Optional<Member> optionalMember = memberRepository.findById(memberId);
 
         if (optionalMember.isPresent()) {
@@ -72,7 +72,7 @@ public class MemberService {
     }
 
     // 전화번호로 회원 조회
-    public Member isMemberExistByPhoneNumber(String phoneNumber) {
+    public Member findMemberByPhoneNumber(String phoneNumber) {
         Optional<Member> optionalMember = memberRepository.findByPhoneNumber(phoneNumber);
 
         if (optionalMember.isPresent()) {

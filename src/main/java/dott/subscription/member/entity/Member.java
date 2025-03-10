@@ -23,11 +23,4 @@ public class Member extends Auditable {
     @Column(unique = true, nullable = false)
     @Setter
     private String phoneNumber;
-
-    @ToString.Exclude
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Subscription subscription;
-
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SubscriptionHistory> subscriptionHistories;
 }

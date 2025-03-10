@@ -173,4 +173,17 @@ public class SubscriptionService {
         }
     }
 
+    // 구독중인 회원 조회
+    public Subscription findSubscriptionByPhoneNumber(Member member) {
+        Optional<Subscription> optionalSubscription = subscriptionRepository.findByMember(member);
+
+        if (optionalSubscription.isPresent()) {
+            // 구독중인 경우
+            return optionalSubscription.get();
+        } else {
+            // 구독하지 않은 경우
+            return null;
+        }
+    }
+
 }

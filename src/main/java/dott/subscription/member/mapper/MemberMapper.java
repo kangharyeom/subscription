@@ -5,6 +5,9 @@ import dott.subscription.constant.SubscriptionStatus;
 import dott.subscription.member.dto.*;
 import dott.subscription.member.entity.Member;
 import dott.subscription.subscription.entity.Subscription;
+import dott.subscription.subscription.repository.SubscriptionRepository;
+import dott.subscription.subscription.service.SubscriptionService;
+import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 
 import java.util.Optional;
@@ -16,8 +19,10 @@ public interface MemberMapper {
     Member memberDeleteDtoToMember(MemberDeleteDto memberDeleteDto);
 
     MemberResponseDto memberToMemberResponseDto(Member member);
-    default MemberDetailsResponseDto memberToMemberDetailsResponseDto(Member member){
-        SubscriptionStatus subscriptionStatus = Optional.ofNullable(member.getSubscription())
+    default MemberDetailsResponseDto memberToMemberDetailsResponseDto(Member member, SubscriptionService subscriptionService){
+        Subscription subscription = subscriptionService.findSubscriptionByPhoneNumber(member);
+
+        SubscriptionStatus subscriptionStatus = Optional.ofNullable(subscription)
                 .map(Subscription::getSubscriptionStatus)
                 .orElse(SubscriptionStatus.NONE);
 

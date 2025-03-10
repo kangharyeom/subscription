@@ -1,15 +1,17 @@
 package dott.subscription.subscription.dto;
 
 import dott.subscription.constant.SubscriptionStatus;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Builder
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class SubscribeResponseDto {
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
+    private long id;
+    private SubscriptionStatus subscriptionStatus;
 }

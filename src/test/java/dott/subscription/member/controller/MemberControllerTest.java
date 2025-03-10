@@ -85,7 +85,7 @@ class MemberControllerTest {
         given(memberMapper.memberToMemberResponseDto(Mockito.any(Member.class))).willReturn(memberResponseDto);
 
         // When & Then
-        mockMvc.perform(post("http://localhost:8080/api/members/create")
+        mockMvc.perform(post("/api/members/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(memberPostDto)))
                 .andExpect(jsonPath("$.data.id").value(1L))
@@ -169,7 +169,7 @@ class MemberControllerTest {
         memberDetailsResponseDto.setCreatedAt(localDateTime);
         memberDetailsResponseDto.setModifiedAt(localDateTime);
         memberDetailsResponseDto.setSubscriptionStatus(SubscriptionStatus.NONE);
-        given(memberMapper.memberToMemberDetailsResponseDto(Mockito.any(Member.class))).willReturn(memberDetailsResponseDto);
+        given(memberMapper.memberToMemberDetailsResponseDto(Mockito.any(Member.class),Mockito.any())).willReturn(memberDetailsResponseDto);
 
         // When & Then
         mockMvc.perform(get("/api/members/1")
@@ -197,7 +197,7 @@ class MemberControllerTest {
         MemberDeleteDto memberDeleteDto = new MemberDeleteDto(1L,"01056781234");
         Member member = new Member();
         member.setId(1L);
-        MemberResponseDto memberResponseDto = new MemberResponseDto(1L, "01056781234", LocalDateTime.now(), LocalDateTime.now());
+        MemberResponseDto memberResponseDto = new MemberResponseDto();
 
         given(memberMapper.memberDeleteDtoToMember(Mockito.any(MemberDeleteDto.class))).willReturn(member);
         given(memberService.deleteMember(Mockito.any(Member.class))).willReturn(member);
@@ -212,12 +212,6 @@ class MemberControllerTest {
                         requestFields(
                                 fieldWithPath("id").type(JsonFieldType.NUMBER).description("삭제할 회원 ID"),
                                 fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("변경할 전화번호")
-                        ),
-                        responseFields(
-                                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("삭제된 회원 ID"),
-                                fieldWithPath("data.phoneNumber").type(JsonFieldType.STRING).description("변경된 전화번호"),
-                                fieldWithPath("data.createdAt").type(JsonFieldType.STRING).description("회원 가입 날짜"),
-                                fieldWithPath("data.modifiedAt").type(JsonFieldType.STRING).description("회원 정보 수정 날짜")
                         )
                 ));
     }

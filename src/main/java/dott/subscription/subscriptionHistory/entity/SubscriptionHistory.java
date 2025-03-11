@@ -23,12 +23,6 @@ public class SubscriptionHistory extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String phoneNumber;
-
-    @Column(nullable = false)
-    private String channelName;
-
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
@@ -47,10 +41,8 @@ public class SubscriptionHistory extends Auditable {
     private LocalDateTime cancelledAt; // 구독 해지한 경우 업데이트
 
     // 구독 생성 이력
-    public SubscriptionHistory(Long id, String phoneNumber, String channelName, Member member, Channel channel, SubscriptionStatus previousSubscriptionStatus, SubscriptionStatus newSubscriptionStatus) {
+    public SubscriptionHistory(Long id, Member member, Channel channel, SubscriptionStatus previousSubscriptionStatus, SubscriptionStatus newSubscriptionStatus) {
         this.id = id;
-        this.phoneNumber = phoneNumber;
-        this.channelName = channelName;
         this.member = member;
         this.channel = channel;
         this.previousSubscriptionStatus = previousSubscriptionStatus;
@@ -58,10 +50,8 @@ public class SubscriptionHistory extends Auditable {
     }
 
     // 구독 해지 이력
-    public SubscriptionHistory(Long id, String phoneNumber, String channelName, Member member, Channel channel, SubscriptionStatus previousSubscriptionStatus, SubscriptionStatus newSubscriptionStatus, LocalDateTime cancelledAt) {
+    public SubscriptionHistory(Long id, Member member, Channel channel, SubscriptionStatus previousSubscriptionStatus, SubscriptionStatus newSubscriptionStatus, LocalDateTime cancelledAt) {
         this.id = id;
-        this.phoneNumber = phoneNumber;
-        this.channelName = channelName;
         this.member = member;
         this.channel = channel;
         this.previousSubscriptionStatus = previousSubscriptionStatus;

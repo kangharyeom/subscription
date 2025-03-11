@@ -14,11 +14,14 @@ import dott.subscription.subscription.entity.Subscription;
 import dott.subscription.subscription.repository.SubscriptionRepository;
 import dott.subscription.subscriptionHistory.entity.SubscriptionHistory;
 import dott.subscription.subscriptionHistory.repository.SubscriptionHistoryRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
@@ -33,10 +36,13 @@ public class SubscriptionService {
     private final ChannelService channelService;
     private final SubscriptionHistoryRepository subscriptionHistoryRepository;
     private final RestTemplate restTemplate;
+    private final EntityManager entityManager;
+
 
     private static final String RANDOM_API_URL = "https://csrng.net/csrng/csrng.php?min=0&max=1";
 
     // 구독 기능
+    @Transactional
     public Subscription subscribe(SubscribeDto subscribeDto) {
         // 회원 인증
         Member member = memberService.findMemberByPhoneNumber(subscribeDto.getPhoneNumber());
@@ -44,9 +50,19 @@ public class SubscriptionService {
         // 채널 유무 확인
         Channel channel = channelService.findChannelByChannelId(subscribeDto.getChannelId());
 
-        // 구독 여부 확인 (구독중인 회원인지 확인)
-        Subscription subscription = subscriptionRepository.findByMember(member)
-                .orElse(new Subscription(member, SubscriptionStatus.NONE));
+        // 구독 여부 확인 (구독중인 회원인지 확인) (비관적락 적용)
+        Subscription existingSubscription = findSubscriptionByPhoneNumber(member);
+
+        Subscription subscription;
+
+        if (existingSubscription != null) {
+            subscription = entityManager.find(Subscription.class, existingSubscription.getId(), LockModeType.PESSIMISTIC_WRITE);
+            if (subscription == null) {
+                throw new BusinessLogicException(Exceptions.SUBSCRIPTION_NOT_FOUND);
+            }
+        } else {
+            subscription = new Subscription(member, SubscriptionStatus.NONE);
+        }
 
         SubscriptionStatus previousSubscriptionStatus = subscription.getSubscriptionStatus();
         SubscriptionStatus newSubscriptionStatus = subscribeDto.getSubscriptionStatus();
@@ -66,7 +82,9 @@ public class SubscriptionService {
         subscription.setSubscriptionStatus(subscribeDto.getSubscriptionStatus());
         subscription.setMember(member);
         subscription.setChannel(channel);
-        subscriptionRepository.save(subscription);
+
+        // 예외 미발생시 구독 테이블 반영
+        entityManager.persist(subscription);
 
         // 구독 이력 생성
         subscriptionHistoryRepository.save(new SubscriptionHistory(null, member, channel, previousSubscriptionStatus, subscribeDto.getSubscriptionStatus()));
@@ -76,6 +94,7 @@ public class SubscriptionService {
     }
 
     // 구독해지 기능
+    @Transactional
     public Subscription unsubscribe(SubscribeDto subscribeDto) {
         // 회원 인증
         Member member = memberService.findMemberByPhoneNumber(subscribeDto.getPhoneNumber());
@@ -83,8 +102,19 @@ public class SubscriptionService {
         // 채널 유무 확인
         Channel channel = channelService.findChannelByChannelId(subscribeDto.getChannelId());
 
-        // 구독 여부 확인 (구독중인 회원인지 확인)
-        Subscription subscription = validateFindSubscriptionByMember(member);
+        // 구독 여부 확인 (구독중인 회원인지 확인) (비관적락 적용)
+        Subscription existingSubscription = findSubscriptionByPhoneNumber(member);
+
+        Subscription subscription;
+
+        if (existingSubscription != null) {
+            subscription = entityManager.find(Subscription.class, existingSubscription.getId(), LockModeType.PESSIMISTIC_WRITE);
+            if (subscription == null) {
+                throw new BusinessLogicException(Exceptions.SUBSCRIPTION_NOT_FOUND);
+            }
+        } else {
+            throw new BusinessLogicException(Exceptions.SUBSCRIPTION_NOT_FOUND);
+        }
 
         SubscriptionStatus previousSubscriptionStatus = subscription.getSubscriptionStatus();
         SubscriptionStatus newSubscriptionStatus = subscribeDto.getSubscriptionStatus();
@@ -101,7 +131,8 @@ public class SubscriptionService {
         }
 
         subscription.setSubscriptionStatus(newSubscriptionStatus);
-        subscriptionRepository.save(subscription);
+        // 예외 미발생시 구독 테이블 반영
+        entityManager.persist(subscription);
 
         // 구독 해지 이력 생성
         if (newSubscriptionStatus.equals(SubscriptionStatus.NONE)) {
@@ -112,6 +143,8 @@ public class SubscriptionService {
             // 프리미엄 구독 -> 일반구독
             subscriptionHistoryRepository.save(new SubscriptionHistory(null, member, channel, previousSubscriptionStatus, subscribeDto.getSubscriptionStatus()));
         }
+        
+
 
         log.info("UNSUBSCRIBE SUCCESS : {}", subscription.toString());
         return subscription;
@@ -158,19 +191,6 @@ public class SubscriptionService {
             return;
         }
         throw new BusinessLogicException(Exceptions.CAN_NOT_UNSUBSCRIBE_CHANNEL);
-    }
-
-    // 구독중인 회원 검증
-    public Subscription validateFindSubscriptionByMember(Member member) {
-        Optional<Subscription> optionalSubscription = subscriptionRepository.findByMember(member);
-
-        if (optionalSubscription.isPresent()) {
-            // 구독중인 경우
-            return optionalSubscription.get();
-        } else {
-            // 구독하지 않은 경우
-            throw new BusinessLogicException(Exceptions.SUBSCRIPTION_NOT_FOUND);
-        }
     }
 
     // 구독중인 회원 조회

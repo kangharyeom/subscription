@@ -4,9 +4,13 @@ import dott.subscription.exception.BusinessLogicException;
 import dott.subscription.exception.Exceptions;
 import dott.subscription.member.entity.Member;
 import dott.subscription.member.repository.MemberRepository;
+import dott.subscription.subscription.repository.SubscriptionRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -15,6 +19,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final SubscriptionRepository subscriptionRepository;
+    private final EntityManager entityManager;
 
     // 회원가입
     public Member createMember(Member member) {
@@ -26,28 +32,39 @@ public class MemberService {
     }
 
     // 회원 전화번호 변경
+    @Transactional
     public Member updatePhoneNumber(Member member) {
-        // 가입된 회원인지 확인
-        findMemberByMemberId(member.getId());
+        // 가입된 회원인지 확인 및 비관적락 적용
+        Member findMember = entityManager.find(Member.class, member.getId(), LockModeType.PESSIMISTIC_WRITE);
 
+        if (findMember == null) {
+            throw new BusinessLogicException(Exceptions.MEMBER_NOT_FOUND);
+        }
         // 중복된 전화번호인지 확인
         isPhoneNumberDuplicated(member.getPhoneNumber());
 
         Optional.ofNullable(member.getPhoneNumber())
-                .ifPresent(member::setPhoneNumber);
+                .ifPresent(findMember::setPhoneNumber);
 
-        log.info("PHONE NUMBER UPDATE SUCCESS : {}", member.toString());
-        return memberRepository.save(member);
+        memberRepository.save(findMember);
+        log.info("PHONE NUMBER UPDATE SUCCESS : {}", findMember.toString());
+        return findMember;
     }
 
     // 회원 삭제
+    @Transactional
     public Member deleteMember(Member member) {
-        // 가입된 회원인지 확인
-        findMemberByMemberId(member.getId());
+        // 가입된 회원인지 확인 및 비관적락 적용
+        Member findMember = entityManager.find(Member.class, member.getPhoneNumber(), LockModeType.PESSIMISTIC_WRITE);
+        if (findMember == null) {
+            throw new BusinessLogicException(Exceptions.MEMBER_NOT_FOUND);
+        }
+        //멤버와 연관된 구독정보 삭제
+        subscriptionRepository.deleteByMember(findMember);
 
-        memberRepository.delete(member);
-        log.info("MEMBER DELETE SUCCESS : {}", member.toString());
-        return member;
+        memberRepository.delete(findMember);
+        log.info("MEMBER DELETE SUCCESS");
+        return findMember;
     }
 
     // 전화번호 중복 확인 메서드

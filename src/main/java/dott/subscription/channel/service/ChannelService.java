@@ -4,9 +4,13 @@ import dott.subscription.channel.entity.Channel;
 import dott.subscription.channel.repository.ChannelRepository;
 import dott.subscription.exception.BusinessLogicException;
 import dott.subscription.exception.Exceptions;
+import dott.subscription.subscription.repository.SubscriptionRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -15,6 +19,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ChannelService {
     private final ChannelRepository channelRepository;
+    private final SubscriptionRepository subscriptionRepository;
+    private final EntityManager entityManager;
 
     public Channel createChannel(Channel channel) {
         // 채널 이름 중복 확인
@@ -24,23 +30,37 @@ public class ChannelService {
         return channelRepository.save(channel);
     }
 
+    @Transactional
     public Channel updateChannelType(Channel channel) {
-        // 등록된 채널인지 확인
-        Channel findChannel = findChannelByChannelId(channel.getId());
+        // 등록된 채널인지 확인 및 비관적락 적용
+        Channel findChannel = entityManager.find(Channel.class, channel.getId(), LockModeType.PESSIMISTIC_WRITE);
+
+        if (findChannel == null) {
+            throw new BusinessLogicException(Exceptions.CHANNEL_NOT_FOUND);
+        }
 
         Optional.ofNullable(channel.getChannelType())
-                .ifPresent(channel::setChannelType);
+                .ifPresent(findChannel::setChannelType);
 
-        log.info("CHANNEL TYPE UPDATE SUCCESS : {}", channel.toString());
-        return channelRepository.save(channel);
+        channelRepository.save(findChannel);
+        log.info("CHANNEL TYPE UPDATE SUCCESS : {}", findChannel.toString());
+        return findChannel;
     }
 
+    @Transactional
     public Channel deleteChannel(long channelId) {
-        // 등록된 채널인지 확인
-        Channel channel = findChannelByChannelId(channelId);
+        // 등록된 채널인지 확인 및 비관적락 적용
+        Channel channel = entityManager.find(Channel.class, channelId, LockModeType.PESSIMISTIC_WRITE);
 
-        log.info("CHANNEL DELETE SUCCESS : {}", channel.toString());
+        if (channel == null) {
+            throw new BusinessLogicException(Exceptions.CHANNEL_NOT_FOUND);
+        }
+
+        //채널과 연관된 구독정보 삭제
+        subscriptionRepository.deleteByChannel(channel);
+
         channelRepository.delete(channel);
+        log.info("CHANNEL DELETE SUCCESS");
         return channel;
     }
 

@@ -194,9 +194,9 @@ class MemberControllerTest {
     @DisplayName("회원 삭제 API 테스트")
     void deleteMemberTest() throws Exception {
         // Given
-        MemberDeleteDto memberDeleteDto = new MemberDeleteDto(1L,"01056781234");
+        MemberDeleteDto memberDeleteDto = new MemberDeleteDto("01056781234");
         Member member = new Member();
-        member.setId(1L);
+        member.setPhoneNumber("01012341234");
 
         given(memberMapper.memberDeleteDtoToMember(Mockito.any(MemberDeleteDto.class))).willReturn(member);
         given(memberService.deleteMember(Mockito.any(Member.class))).willReturn(member);
@@ -208,7 +208,6 @@ class MemberControllerTest {
                 .andExpect(status().isNoContent())
                 .andDo(document("member-delete",
                         requestFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("삭제할 회원 ID"),
                                 fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("변경할 전화번호")
                         )
                 ));

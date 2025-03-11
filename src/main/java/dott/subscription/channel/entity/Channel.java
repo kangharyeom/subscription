@@ -26,6 +26,7 @@ public class Channel extends Auditable {
     private String name;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ChannelType channelType;
 
 }

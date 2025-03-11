@@ -31,9 +31,11 @@ public class SubscriptionHistory extends Auditable {
     @JoinColumn(name = "channel_id", nullable = false)
     private Channel channel;
 
+    @Column
     @Enumerated(EnumType.STRING)
     private SubscriptionStatus previousSubscriptionStatus;  // 이전 구독 상태
 
+    @Column
     @Enumerated(EnumType.STRING)
     private SubscriptionStatus newSubscriptionStatus;  // 변경된 구독 상태
 

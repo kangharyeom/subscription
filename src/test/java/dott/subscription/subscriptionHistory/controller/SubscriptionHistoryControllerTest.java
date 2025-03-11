@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
@@ -68,38 +69,60 @@ class SubscriptionHistoryControllerTest {
 
         // 회원 세팅
         Member member = new Member();
-        member.setPhoneNumber("01012341234");
         member.setId(1L);
+        member.setPhoneNumber("01012341234");
+        member.setCreatedAt(localDateTime);
+        member.setModifiedAt(localDateTime);
 
         // 채널 세팅
         Channel channel = new Channel();
         channel.setName("홈페이지");
         channel.setId(1L);
         channel.setChannelType(ChannelType.BOTH);
+        channel.setCreatedAt(localDateTime);
+        channel.setModifiedAt(localDateTime);
 
-        List<SubscriptionHistory> subscriptionHistoryResponse = null;
         SubscriptionHistory subscriptionHistory = new SubscriptionHistory();
+        subscriptionHistory.setId(1L);
         subscriptionHistory.setPreviousSubscriptionStatus(SubscriptionStatus.NONE);
         subscriptionHistory.setNewSubscriptionStatus(SubscriptionStatus.BASIC);
         subscriptionHistory.setChannel(channel);
         subscriptionHistory.setMember(member);
+        subscriptionHistory.setCreatedAt(localDateTime);
+        subscriptionHistory.setModifiedAt(localDateTime);
+
+        List<SubscriptionHistory> subscriptionHistoryResponse = new ArrayList<>();
+        subscriptionHistoryResponse.add(subscriptionHistory);
+
         given(subscriptionHistoryService.getSubscriptionHistory(Mockito.anyString())).willReturn(subscriptionHistoryResponse);
         // When & Then
         mockMvc.perform(get("/api/subscription/histories/search")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(subscriptionHistoryDto)))
-                .andExpect(jsonPath("$.data.phoneNumber").value("01012341234"))
-                .andExpect(status().isCreated())
-                .andDo(document("channel-create",
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].member.phoneNumber").value("01012341234"))
+                .andDo(document("subscription-history-by-phoneNumber",
                         requestFields(
                                 fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("회원 전화번호")
                         ),
                         responseFields(
-                                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("채널 ID"),
-                                fieldWithPath("data.name").type(JsonFieldType.STRING).description("채널명"),
-                                fieldWithPath("data.channelType").type(JsonFieldType.STRING).description("구독 창구 타입"),
-                                fieldWithPath("data.createdAt").type(JsonFieldType.STRING).description("채널 가입 날짜"),
-                                fieldWithPath("data.modifiedAt").type(JsonFieldType.STRING).description("채널 정보 수정 날짜")
+                                fieldWithPath("data[].id").type(JsonFieldType.NUMBER).description("구독조회 이력 ID"),
+                                fieldWithPath("data[].createdAt").type(JsonFieldType.STRING).description("구독 날짜"),
+                                fieldWithPath("data[].modifiedAt").type(JsonFieldType.STRING).description("구독 정보 수정 날짜"),
+                                fieldWithPath("data[].cancelledAt").type(JsonFieldType.NULL).description("구독 해지 날짜"),
+                                fieldWithPath("data[].previousSubscriptionStatus").type(JsonFieldType.STRING).description("이전 구독 상태"),
+                                fieldWithPath("data[].newSubscriptionStatus").type(JsonFieldType.STRING).description("현재 구독 상태"),
+                                fieldWithPath("data[].member").type(JsonFieldType.OBJECT).description("회원 클래스"),
+                                fieldWithPath("data[].member.id").type(JsonFieldType.NUMBER).description("회원 ID"),
+                                fieldWithPath("data[].member.phoneNumber").type(JsonFieldType.STRING).description("회원 전화번호"),
+                                fieldWithPath("data[].member.createdAt").type(JsonFieldType.STRING).description("회원 가입 일자"),
+                                fieldWithPath("data[].member.modifiedAt").type(JsonFieldType.STRING).description("회원 수정 이력 일자"),
+                                fieldWithPath("data[].channel").type(JsonFieldType.OBJECT).description("채널 클래스"),
+                                fieldWithPath("data[].channel.id").type(JsonFieldType.NUMBER).description("채널 ID"),
+                                fieldWithPath("data[].channel.name").type(JsonFieldType.STRING).description("채널명"),
+                                fieldWithPath("data[].channel.createdAt").type(JsonFieldType.STRING).description("채널 생성 일자"),
+                                fieldWithPath("data[].channel.modifiedAt").type(JsonFieldType.STRING).description("채널 수정 일자"),
+                                fieldWithPath("data[].channel.channelType").type(JsonFieldType.STRING).description("채널 창구 타입")
                         )
                 ));
     }

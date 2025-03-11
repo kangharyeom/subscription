@@ -79,12 +79,9 @@ public class ChannelController {
     @DeleteMapping("/delete/{channelId}")
     public ResponseEntity deleteChannel(@PathVariable long channelId) {
         log.info("CHANNEL UPDATE START");
-
         log.debug("[channelId - deleteChannel] : {}", channelId);
-
-        ChannelResponseDto channelResponseDto = channelMapper.channelToChannelResponseDto(channelService.deleteChannel(channelId));
-        log.debug("[ChannelResponseDto - deleteChannel] : {}", channelResponseDto.toString());
+        channelService.deleteChannel(channelId);
         log.info("CHANNEL UPDATE END");
-        return new ResponseEntity<>(new SingleResponseDto<>(channelResponseDto), HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

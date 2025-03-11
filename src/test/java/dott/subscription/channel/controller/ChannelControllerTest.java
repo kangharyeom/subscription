@@ -201,18 +201,14 @@ class ChannelControllerTest {
     @DisplayName("채널 삭제 API 테스트")
     void deleteChannel() throws Exception {
         // Given
-        long channelId = 1L;
-
         Channel channel = new Channel();
-        channel.setId(channelId);
-        ChannelResponseDto channelResponseDto = new ChannelResponseDto();
+        channel.setId(1L);
         given(channelService.deleteChannel(Mockito.anyLong())).willReturn(channel);
-        given(channelMapper.channelToChannelResponseDto(Mockito.any(Channel.class))).willReturn(channelResponseDto);
 
         // When & Then
-        mockMvc.perform(delete("/api/channels/delete/{id}",channelId)
+        mockMvc.perform(delete("/api/channels/delete/{id}",1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(channelId)))
+                        .content(objectMapper.writeValueAsString(1L)))
                 .andExpect(status().isNoContent())
                 .andDo(document("channel-delete",
                         pathParameters(

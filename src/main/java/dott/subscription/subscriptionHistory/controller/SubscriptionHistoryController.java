@@ -28,10 +28,10 @@ public class SubscriptionHistoryController {
      */
     @GetMapping("/search")
     public ResponseEntity getSubscriptionHistories(@RequestBody @Validated SubscriptionHistoryDto subscriptionHistoryDto){
-        log.info("UPDATE MEMBER's PHONE NUMBER START");
+        log.info("GET SUBSCRIPTION HISTORIES START");
         List<SubscriptionHistory> subscriptionHistoryResponse = subscriptionHistoryService.getSubscriptionHistory(subscriptionHistoryDto.getPhoneNumber());
 
-        log.info("UPDATE MEMBER's PHONE NUMBER END");
+        log.info("GET SUBSCRIPTION HISTORIES END");
         return new ResponseEntity(new SingleResponseDto<>(subscriptionHistoryResponse), HttpStatus.OK);
     }
 }

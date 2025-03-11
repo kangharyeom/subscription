@@ -197,11 +197,9 @@ class MemberControllerTest {
         MemberDeleteDto memberDeleteDto = new MemberDeleteDto(1L,"01056781234");
         Member member = new Member();
         member.setId(1L);
-        MemberResponseDto memberResponseDto = new MemberResponseDto();
 
         given(memberMapper.memberDeleteDtoToMember(Mockito.any(MemberDeleteDto.class))).willReturn(member);
         given(memberService.deleteMember(Mockito.any(Member.class))).willReturn(member);
-        given(memberMapper.memberToMemberResponseDto(Mockito.any(Member.class))).willReturn(memberResponseDto);
 
         // When & Then
         mockMvc.perform(delete("/api/members/delete")

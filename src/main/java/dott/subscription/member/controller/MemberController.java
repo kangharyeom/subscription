@@ -66,7 +66,7 @@ public class MemberController {
      */
     @GetMapping("/{memberId}")
     public ResponseEntity<MemberResponseDto> getMemberDetails(@PathVariable long memberId) {
-        log.info("UPDATE MEMBER's PHONE NUMBER START");
+        log.info("GET MEMBER DETAILS START");
 
         // Dto to Entity 세팅
         Member member = memberService.findMemberByMemberId(memberId);
@@ -76,7 +76,7 @@ public class MemberController {
         MemberDetailsResponseDto memberDetailsResponseDto = memberMapper.memberToMemberDetailsResponseDto(member, subscriptionService);
         log.debug("[MemberDetailsResponseDto - getMemberDetails] : {}", memberDetailsResponseDto.toString());
 
-        log.info("UPDATE MEMBER's PHONE NUMBER END");
+        log.info("GET MEMBER DETAILS END");
         return new ResponseEntity(new SingleResponseDto<>(memberDetailsResponseDto), HttpStatus.OK);
     }
 
@@ -91,9 +91,9 @@ public class MemberController {
         Member member = memberMapper.memberDeleteDtoToMember(memberDeleteDto);
 
         // 회원 삭제
-        MemberResponseDto memberResponseDto = memberMapper.memberToMemberResponseDto(memberService.deleteMember(member));
+        memberService.deleteMember(member);
 
         log.info("DELETE MEMBER END");
-        return new ResponseEntity(new SingleResponseDto<>(memberResponseDto), HttpStatus.NO_CONTENT);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

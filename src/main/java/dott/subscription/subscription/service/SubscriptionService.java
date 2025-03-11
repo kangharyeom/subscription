@@ -69,7 +69,7 @@ public class SubscriptionService {
         subscriptionRepository.save(subscription);
 
         // 구독 이력 생성
-        subscriptionHistoryRepository.save(new SubscriptionHistory(null, member.getPhoneNumber(), channel.getName(), member, channel, previousSubscriptionStatus, subscribeDto.getSubscriptionStatus()));
+        subscriptionHistoryRepository.save(new SubscriptionHistory(null, member, channel, previousSubscriptionStatus, subscribeDto.getSubscriptionStatus()));
 
         log.info("SUBSCRIBE SUCCESS : {}", subscription.toString());
         return subscription;
@@ -107,10 +107,10 @@ public class SubscriptionService {
         if (newSubscriptionStatus.equals(SubscriptionStatus.NONE)) {
             // 일반구독 || 프리미엄 구독 -> 구독해지
             LocalDateTime unsubscribeTime = LocalDateTime.now();
-            subscriptionHistoryRepository.save(new SubscriptionHistory(null, member.getPhoneNumber(), channel.getName(), member, channel, previousSubscriptionStatus, subscribeDto.getSubscriptionStatus(), unsubscribeTime));
+            subscriptionHistoryRepository.save(new SubscriptionHistory(null, member, channel, previousSubscriptionStatus, subscribeDto.getSubscriptionStatus(), unsubscribeTime));
         } else {
             // 프리미엄 구독 -> 일반구독
-            subscriptionHistoryRepository.save(new SubscriptionHistory(null, member.getPhoneNumber(), channel.getName(), member, channel, previousSubscriptionStatus, subscribeDto.getSubscriptionStatus()));
+            subscriptionHistoryRepository.save(new SubscriptionHistory(null, member, channel, previousSubscriptionStatus, subscribeDto.getSubscriptionStatus()));
         }
 
         log.info("UNSUBSCRIBE SUCCESS : {}", subscription.toString());

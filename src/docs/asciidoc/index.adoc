@@ -1,0 +1,97 @@
+ifndef::snippets[]
+:snippets: ../../build/generated-snippets
+endif::[]
+= API 명세서
+:sectnums:
+:doctype: book
+:source-highlighter: rouge
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 5
+:sectanchors:
+:sectlinks:
+:operation-request-parameters-title: Request Parameter
+
+= API
+
+== 회원 API
+=== 회원 가입
+operation::member-create[snippets='http-request']
+operation::member-create[snippets='http-response']
+operation::member-create[snippets='request-body']
+operation::member-create[snippets='request-fields']
+operation::member-create[snippets='response-body']
+operation::member-create[snippets='response-fields']
+=== 회원 상세 조회
+operation::member-details[snippets='http-request']
+operation::member-details[snippets='http-response']
+operation::member-details[snippets='request-body']
+operation::member-details[snippets='response-body']
+operation::member-details[snippets='response-fields']
+=== 회원 전화번호 변경
+operation::member-update-phone[snippets='http-request']
+operation::member-update-phone[snippets='http-response']
+operation::member-update-phone[snippets='request-body']
+operation::member-update-phone[snippets='request-fields']
+operation::member-update-phone[snippets='response-body']
+operation::member-update-phone[snippets='response-fields']
+=== 회원 삭제
+operation::member-delete[snippets='http-request']
+operation::member-delete[snippets='http-response']
+operation::member-delete[snippets='request-body']
+operation::member-delete[snippets='request-fields']
+operation::member-delete[snippets='response-body']
+
+== 채널 API
+=== 채널 생성
+operation::channel-create[snippets='http-request']
+operation::channel-create[snippets='http-response']
+operation::channel-create[snippets='request-body']
+operation::channel-create[snippets='request-fields']
+operation::channel-create[snippets='response-body']
+operation::channel-create[snippets='response-fields']
+=== 채널 조회
+operation::channel-find-by-channelId[snippets='http-request']
+operation::channel-find-by-channelId[snippets='http-response']
+operation::channel-find-by-channelId[snippets='request-body']
+operation::channel-find-by-channelId[snippets='response-body']
+operation::channel-find-by-channelId[snippets='response-fields']
+=== 채널 창구 타입 변경
+operation::channel-update-channelType[snippets='http-request']
+operation::channel-update-channelType[snippets='http-response']
+operation::channel-update-channelType[snippets='request-body']
+operation::channel-update-channelType[snippets='request-fields']
+operation::channel-update-channelType[snippets='response-body']
+operation::channel-update-channelType[snippets='response-fields']
+=== 채널 삭제
+operation::channel-delete[snippets='http-request']
+operation::channel-delete[snippets='http-response']
+operation::channel-delete[snippets='request-body']
+operation::channel-delete[snippets='response-body']
+
+== 구독 API
+=== 구독
+operation::subscription-subscribe[snippets='http-request']
+operation::subscription-subscribe[snippets='http-response']
+operation::subscription-subscribe[snippets='request-body']
+operation::subscription-subscribe[snippets='request-fields']
+operation::subscription-subscribe[snippets='response-body']
+operation::subscription-subscribe[snippets='response-fields']
+=== 구독 해지
+operation::subscription-unSubscribe[snippets='http-request']
+operation::subscription-unSubscribe[snippets='http-response']
+operation::subscription-unSubscribe[snippets='request-body']
+operation::subscription-unSubscribe[snippets='request-fields']
+operation::subscription-unSubscribe[snippets='response-body']
+operation::subscription-unSubscribe[snippets='response-fields']
+
+== 구독 이력 조회 API
+=== 구독 이력 조회
+operation::subscription-history-by-phoneNumber[snippets='http-request']
+operation::subscription-history-by-phoneNumber[snippets='http-response']
+operation::subscription-history-by-phoneNumber[snippets='request-body']
+operation::subscription-history-by-phoneNumber[snippets='request-fields']
+operation::subscription-history-by-phoneNumber[snippets='response-body']
+operation::subscription-history-by-phoneNumber[snippets='response-fields']
+

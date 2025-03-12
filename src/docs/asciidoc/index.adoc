@@ -1,0 +1,47 @@
+ifndef::snippets[]
+:snippets: ../../build/generated-snippets
+endif::[]
+= API 명세서
+:sectnums:
+:doctype: book
+:source-highlighter: rouge
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 5
+:sectanchors:
+:sectlinks:
+:operation-request-parameters-title: Request Parameter
+
+= API
+
+== 회원 API
+=== 회원 가입
+operation::member-create[]
+=== 회원 상세 조회
+operation::member-details[]
+=== 회원 전화번호 변경
+operation::member-update-phone[]
+=== 회원 삭제
+operation::member-delete[]
+
+== 채널 API
+=== 채널 생성
+operation::channel-create[]
+=== 채널 조회
+operation::channel-find-by-channelId[]
+=== 채널 창구 타입 변경
+operation::channel-update-channelType[]
+=== 채널 삭제
+operation::channel-delete[]
+
+== 구독 API
+=== 구독
+operation::subscription-subscribe[]
+=== 구독 해지
+operation::subscription-unSubscribe[]
+
+== 구독 이력 조회 API
+=== 구독 이력 조회
+operation::subscription-history-by-phoneNumber[]
+

@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -134,6 +135,7 @@ class MemberControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(memberPatchDto)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(1L))
                 .andExpect(jsonPath("$.data.phoneNumber").value("01056781234"))
                 .andDo(print())
                 .andDo(document("member-update-phone",
@@ -176,10 +178,13 @@ class MemberControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(memberId)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(1L))
+                .andExpect(jsonPath("$.data.phoneNumber").value("01056781234"))
+                .andExpect(jsonPath("$.data.subscriptionStatus").value(SubscriptionStatus.NONE.toString()))
                 .andDo(document("member-details",
                         responseFields(
-                                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("삭제된 회원 ID"),
-                                fieldWithPath("data.phoneNumber").type(JsonFieldType.STRING).description("변경된 전화번호"),
+                                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("회원 ID"),
+                                fieldWithPath("data.phoneNumber").type(JsonFieldType.STRING).description("회원 전화번호"),
                                 fieldWithPath("data.subscriptionStatus").type(JsonFieldType.STRING).description("회원 구독 상태"),
                                 fieldWithPath("data.createdAt").type(JsonFieldType.STRING).description("회원 가입 날짜"),
                                 fieldWithPath("data.modifiedAt").type(JsonFieldType.STRING).description("회원 정보 수정 날짜")

@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,12 +96,20 @@ class SubscriptionHistoryControllerTest {
         subscriptionHistoryResponse.add(subscriptionHistory);
 
         given(subscriptionHistoryService.getSubscriptionHistory(Mockito.anyString())).willReturn(subscriptionHistoryResponse);
+
         // When & Then
         mockMvc.perform(get("/api/subscription/histories/search")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(subscriptionHistoryDto)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].id").value(1L))
+                .andExpect(jsonPath("$.data[0].previousSubscriptionStatus").value(SubscriptionStatus.NONE.toString()))
+                .andExpect(jsonPath("$.data[0].newSubscriptionStatus").value(SubscriptionStatus.BASIC.toString()))
+                .andExpect(jsonPath("$.data[0].member.id").value(1L))
                 .andExpect(jsonPath("$.data[0].member.phoneNumber").value("01012341234"))
+                .andExpect(jsonPath("$.data[0].channel.id").value(1L))
+                .andExpect(jsonPath("$.data[0].channel.name").value("홈페이지"))
+                .andExpect(jsonPath("$.data[0].channel.channelType").value(ChannelType.BOTH.toString()))
                 .andDo(document("subscription-history-by-phoneNumber",
                         requestFields(
                                 fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("회원 전화번호")
@@ -120,9 +129,9 @@ class SubscriptionHistoryControllerTest {
                                 fieldWithPath("data[].channel").type(JsonFieldType.OBJECT).description("채널 클래스"),
                                 fieldWithPath("data[].channel.id").type(JsonFieldType.NUMBER).description("채널 ID"),
                                 fieldWithPath("data[].channel.name").type(JsonFieldType.STRING).description("채널명"),
+                                fieldWithPath("data[].channel.channelType").type(JsonFieldType.STRING).description("채널 창구 타입"),
                                 fieldWithPath("data[].channel.createdAt").type(JsonFieldType.STRING).description("채널 생성 일자"),
-                                fieldWithPath("data[].channel.modifiedAt").type(JsonFieldType.STRING).description("채널 수정 일자"),
-                                fieldWithPath("data[].channel.channelType").type(JsonFieldType.STRING).description("채널 창구 타입")
+                                fieldWithPath("data[].channel.modifiedAt").type(JsonFieldType.STRING).description("채널 수정 일자")
                         )
                 ));
     }

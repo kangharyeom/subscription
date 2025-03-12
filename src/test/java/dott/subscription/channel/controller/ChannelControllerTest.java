@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -89,10 +90,12 @@ class ChannelControllerTest {
         channel2.setModifiedAt(localDateTime);
         given(channelService.createChannel(Mockito.any(Channel.class))).willReturn(channel2);
         given(channelMapper.channelToChannelResponseDto(Mockito.any(Channel.class))).willReturn(channelResponseDto);
+
         // When & Then
         mockMvc.perform(post("/api/channels/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(channelPostDto)))
+                .andExpect(jsonPath("$.data.id").value(1L))
                 .andExpect(jsonPath("$.data.name").value("홈페이지"))
                 .andExpect(jsonPath("$.data.channelType").value("BOTH"))
                 .andExpect(status().isCreated())
@@ -123,7 +126,7 @@ class ChannelControllerTest {
 
         Channel channel = new Channel();
         channel.setId(channelId);
-        ChannelResponseDto channelResponseDto = new ChannelResponseDto(1L, "홈페이지", ChannelType.BOTH, localDateTime, localDateTime);
+        ChannelResponseDto channelResponseDto = new ChannelResponseDto(1L, "홈페이지", ChannelType.SUBSCRIBE_ONLY, localDateTime, localDateTime);
         given(channelService.findChannelByChannelId(Mockito.anyLong())).willReturn(channel);
         given(channelMapper.channelToChannelResponseDto(Mockito.any(Channel.class))).willReturn(channelResponseDto);
 
@@ -132,6 +135,9 @@ class ChannelControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(channelId)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(1L))
+                .andExpect(jsonPath("$.data.name").value("홈페이지"))
+                .andExpect(jsonPath("$.data.channelType").value("SUBSCRIBE_ONLY"))
                 .andDo(document("channel-find-by-channelId",
                         pathParameters(
                                 parameterWithName("id").description("조회할 채널 ID")
@@ -177,6 +183,7 @@ class ChannelControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(channelPatchDto)))
                 .andExpect(jsonPath("$.data.id").value(1L))
+                .andExpect(jsonPath("$.data.name").value("홈페이지"))
                 .andExpect(jsonPath("$.data.channelType").value("SUBSCRIBE_ONLY"))
                 .andExpect(status().isOk())
                 .andDo(document("channel-update-channelType",
